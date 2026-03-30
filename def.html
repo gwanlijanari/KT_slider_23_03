@@ -1,0 +1,88 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <style>
+      #box {
+        background: linear-gradient(
+          90deg,
+          rgba(0, 255, 238, 1) 0%,
+          rgba(255, 0, 60, 1) 100%
+        );
+        display: flex;
+        align-items: center;
+
+        width: 600px;
+        height: 15px;
+        border: 2px solid #333;
+        position: relative;
+        margin: 50px auto;
+        overflow: visible;
+      }
+
+      #slider {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        border-radius: 5px;
+        border: black solid 1px;
+        height: 100px;
+        width: 70px;
+        background-color: cyan;
+        position: absolute;
+        touch-action: none;
+        z-index: 2;
+        transform: translateX(-50%);
+      }
+    </style>
+  </head>
+  <body>
+    <div id="box">
+      <div id="slider">
+        <span id="value">0%</span>
+      </div>
+    </div>
+
+    <script>
+      const box = document.getElementById("box");
+      const slider = document.getElementById("slider");
+      const display = document.getElementById("value");
+
+      function updateSlider(clientX) {
+        event.preventDefault();
+        let left = event.pageX - box.getBoundingClientRect().left;
+
+        const width = box.offsetWidth;
+
+        if (left > width) left = width;
+        if (left < 0) left = 0;
+
+        let percent = (left / width) * 100;
+
+        slider.style.left = left + "px";
+        display.textContent = Math.round(percent) + "%";
+        box.style.background = `linear-gradient(90deg, rgba(0, 255, 238, 1) ${percent}%, rgba(255, 0, 60, 1) 100%)`;
+      }
+
+      box.onclick = (event) => {
+        if (event.target === slider || slider.contains(event.target)) return;
+        updateSlider(event.clientX);
+      };
+
+      slider.onmousedown = (event) => {
+        event.preventDefault();
+        if (event.button !== 0) return;
+
+        const onMouseMove = (e) => updateSlider(e.clientX);
+
+        document.addEventListener("mousemove", onMouseMove);
+        document.onmouseup = () => {
+          document.removeEventListener("mousemove", onMouseMove);
+          document.onmouseup = null;
+        };
+      };
+    </script>
+  </body>
+</html>
